@@ -1,7 +1,8 @@
-package com.example.travelgo.data.remote // ⚠️ Cambia esto por tu paquete
+
+package com.example.travelgo.data.remote
 
 import android.content.Context
-import com.tuempresa.tuapp.data.local.SessionManager
+import com.example.travelgo.data.local.SessionManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -9,42 +10,26 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
+    // 👇 Base de Xano entregada por el usuario (termina en /)
+    private const val BASE_URL = "https://x8ki-letl-twmt.n7.xano.io/api:Rfm_61dW/"
 
-    // ⚠️ CAMBIA ESTA URL POR LA DE TU API
-    private const val BASE_URL = "https://dummyjson.com/"
-
-    /**
-     * Inicializa Retrofit con el contexto de la app
-     * Llamar desde Application o ViewModel al inicio
-     */
-    fun create(context: Context): Retrofit {
-
-        // 1️⃣ SessionManager para manejar el token
-        val sessionManager = SessionManager(context)
-
-        // 2️⃣ AuthInterceptor para inyectar el token automáticamente
-        val authInterceptor = AuthInterceptor(sessionManager)
-
-        // 3️⃣ HttpLoggingInterceptor para debugging
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY  // ⚠️ Cambiar a NONE en producción
+    fun build(context: Context): Retrofit {
+        val session = SessionManager(context)
+        val logging = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
         }
 
-        // 4️⃣ OkHttpClient con AMBOS interceptores
-        val okHttpClient = OkHttpClient.Builder()
-            // ⚠️ ORDEN IMPORTANTE: AuthInterceptor primero, luego Logging
-            .addInterceptor(authInterceptor)    // Añade el token
-            .addInterceptor(loggingInterceptor)  // Muestra en Logcat (con token)
-            .connectTimeout(15, TimeUnit.SECONDS)
+        val client = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(session))
+            .addInterceptor(logging)
+            .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
             .build()
 
-        // 5️⃣ Retrofit con el cliente configurado
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient)
+            .client(client)
             .build()
     }
 }
-

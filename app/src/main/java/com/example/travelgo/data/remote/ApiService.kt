@@ -1,67 +1,40 @@
-package com.example.travelgo.data.remote // ⚠️ Cambia esto por tu paquete
+package com.example.travelgo.data.remote
 
-import com.tuempresa.tuapp.data.remote.dto.*
-import retrofit2.http.*
+import com.example.travelgo.data.remote.dto.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
 
 /**
- * Define los endpoints de tu API
- * Usando DummyJSON como ejemplo de API REST con autenticación JWT
+ * API contract para TravelGo.
+ * Ajusta las rutas si tu backend usa otras.
  */
 interface ApiService {
 
-    /**
-     * 🔐 LOGIN - Autenticar usuario
-     * POST /user/login
-     *
-     * Ejemplo de uso:
-     * val response = apiService.login(LoginRequest("emilys", "emilyspass"))
-     * sessionManager.saveAuthToken(response.accessToken)
-     */
-    @POST("user/login")
-    suspend fun login(@Body request: LoginRequest): LoginResponse
+    // ---------- AUTH ----------
+    @POST("auth/login")
+    suspend fun login(@Body body: LoginRequest): LoginResponse
 
-    /**
-     * 👤 OBTENER USUARIO ACTUAL (requiere autenticación)
-     * GET /user/me
-     *
-     * ⚠️ IMPORTANTE: Este endpoint REQUIERE el token JWT
-     * El AuthInterceptor lo añade automáticamente
-     *
-     * Ejemplo de uso:
-     * val currentUser = apiService.getCurrentUser()
-     */
-    @GET("user/me")
-    suspend fun getCurrentUser(): UserDto
+    // Usuario autenticado (perfil)
+    @GET("auth/me")
+    suspend fun me(): UserDto
 
-    /**
-     * 📋 OBTENER LISTA DE USUARIOS
-     * GET /users
-     *
-     * Ejemplo de uso:
-     * val response = apiService.getUsers()
-     * val usersList = response.users  // Lista de UserDto
-     */
-    @GET("users")
-    suspend fun getUsers(): UsersResponse
+    @POST("auth/signup")
+    suspend fun signup(@Body body: Map<String, String>): LoginResponse
 
-    /**
-     * 🔍 BUSCAR USUARIOS POR NOMBRE
-     * GET /users/search?q={query}
-     *
-     * Ejemplo de uso:
-     * val results = apiService.searchUsers("John")
-     */
-    @GET("users/search")
-    suspend fun searchUsers(@Query("q") query: String): UsersResponse
+    // ---------- TRAVEL (paquetes / reservas) ----------
+    // En algunos backends la lista puede vivir en /package o /packages.
+    // Probamos ambos: primero singular (lista plana) y luego plural (objeto con 'list').
+    @GET("package")
+    suspend fun listPackagesSingular(): List<PackageDto>
 
-    /**
-     * 👤 OBTENER USUARIO POR ID
-     * GET /users/{id}
-     *
-     * Ejemplo de uso:
-     * val user = apiService.getUserById(1)
-     */
-    @GET("users/{id}")
-    suspend fun getUserById(@Path("id") id: Int): UserDto
+    @GET("packages")
+    suspend fun listPackagesPlural(): PackagesResponse
+
+    @GET("package/{id}")
+    suspend fun getPackage(@Path("id") id: Int): PackageDto
+
+    @POST("reservation")
+    suspend fun createReservation(@Body body: ReservationRequest): ReservationResponse
 }
-

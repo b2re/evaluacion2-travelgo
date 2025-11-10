@@ -1,31 +1,12 @@
-package com.tuempresa.tuapp.data.remote.dto
+
+package com.example.travelgo.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
-/**
- * DTO para la respuesta de login
- * Datos que RECIBIMOS del servidor tras login exitoso
- */
 data class LoginResponse(
-    @SerializedName("id")
-    val id: Int,
-
-    @SerializedName("username")
-    val username: String,
-
-    @SerializedName("email")
-    val email: String,
-
-    @SerializedName("firstName")
-    val firstName: String,
-
-    @SerializedName("lastName")
-    val lastName: String,
-
-    @SerializedName("accessToken")
-    val accessToken: String,  // 🔑 TOKEN JWT - Lo guardamos en SessionManager
-
-    @SerializedName("refreshToken")
-    val refreshToken: String?  // Opcional - Para renovar el token
-)
-
+    @SerializedName("authToken") val authToken: String?, // nombre típico en Xano
+    @SerializedName("token") val token: String?,         // por si el campo se llama 'token'
+    @SerializedName("user") val user: UserDto?           // algunos devuelven el usuario
+) {
+    fun resolveToken(): String? = authToken ?: token
+}

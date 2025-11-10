@@ -1,19 +1,8 @@
-package com.tuempresa.tuapp.data.remote.dto
 
-import com.google.gson.annotations.SerializedName
+package com.example.travelgo.data.remote.dto
 
-/**
- * DTO para la petición de login
- * Datos que ENVIAMOS al servidor
- */
+// Xano suele aceptar email+password o username+password. Usamos email.
 data class LoginRequest(
-    @SerializedName("username")
-    val username: String,
-
-    @SerializedName("password")
-    val password: String,
-
-    @SerializedName("expiresInMins")
-    val expiresInMins: Int = 30  // Token expira en 30 minutos
+    val email: String,
+    val password: String
 )
-

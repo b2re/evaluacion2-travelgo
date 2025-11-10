@@ -1,30 +1,32 @@
-package com.example.travelgo.ui.navegation
+package com.example.travelgo.ui.navegation  // usa el mismo paquete que ya tienes
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.travelgo.ui.screens.ProfileScreen
-import com.example.travelgo.ui.screens.LoginScreen
+import androidx.navigation.compose.rememberNavController
 import com.example.travelgo.ui.screens.HomeScreen
+import com.example.travelgo.ui.screens.LoginScreen
+import com.example.travelgo.ui.screens.ProfileScreen
 
 /**
  * Define la navegación de la app.
  */
 @Composable
-fun AppNavigation(navController: NavHostController) {
+fun AppNavigation(navController: NavHostController = rememberNavController()) {
     NavHost(
         navController = navController,
-        startDestination = "login" // Pantalla inicial
+        startDestination = "login" // pantalla inicial
     ) {
-        composable("login") {
+        composable(route = "login") {
             LoginScreen(navController)
         }
-        composable("home") {
+        composable(route = "home") {
             HomeScreen(navController)
         }
-        composable("profile") {
-            ProfileScreen(navController)
+        composable(route = "profile") {
+            // ProfileScreen NO recibe NavController; solo su ViewModel interno
+            ProfileScreen()
         }
     }
 }
